@@ -1,0 +1,52 @@
+/*
+ * Project SIT210-Task3.3D-CloudFunction
+ * Description: Listens for Deakin_RIOT_SIT210_Photon_Buddy events on the Particle cloud, and blinks an LED differently depending on the data.
+ * Author:Matthew Murrell
+ * Date: 25/04/2022
+ */
+
+const pin_t MY_LED = D6;      // The pin that the LED is connected to
+const int DELAY_TIME = 250; // The number of milliseconds delayed between blinks
+
+SYSTEM_THREAD(ENABLED);
+
+// setup() runs once, when the device is first turned on.
+void setup() {
+    pinMode(MY_LED, OUTPUT); //Sets the pin mode of My_LED to output
+    //Subscribes the device to the event, with the riotHandler method as its event handler
+    Particle.subscribe("Deakin_RIOT_SIT210_Photon_Buddy", riotHandler, ALL_DEVICES); 
+}
+
+// Blinks the LED three times
+void wave_blink(){
+    for (int i = 0; i < 3; i++)	{
+        digitalWrite(MY_LED, HIGH); //Turns the LED on
+        delay(DELAY_TIME); //Waits for DELAY_TIME ms
+        digitalWrite(MY_LED, LOW); //Turns the LED off
+        delay(DELAY_TIME); //Waits for DELAY_TIME ms
+    }
+}
+
+// Blinks the LED once, for five times the length of wave_blink
+void pat_blink(){
+    digitalWrite(MY_LED, HIGH); //Turns the LED on
+    delay(5 * DELAY_TIME); //Waits for  5 * DELAY_TIME ms
+    digitalWrite(MY_LED, LOW); //Turns the LED off
+}
+
+// The handler that is called when a Deakin_RIOT_SIT210_Photon_Buddy event is detected
+void riotHandler(const char *event, const char *data) {
+    //Calls either blink_wave or blink_pat depending on the data of the event
+    if (String(data) == "wave") {
+        wave_blink();
+    } else {
+        if (String(data) == "pat"){
+          pat_blink();
+        }
+    }
+}
+
+// loop() runs over and over again, as quickly as it can execute.
+void loop() {
+
+}
